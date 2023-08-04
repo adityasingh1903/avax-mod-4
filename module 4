@@ -1,0 +1,78 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.18;
+
+import "hardhat/console.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract DegenToken is ERC20, ERC20Burnable, Ownable{
+    constructor() ERC20("DegenToken","DGN"){}
+
+    function mint(address recipient, uint256 amount) external onlyOwner{
+        _mint(recipient,amount);
+    }
+
+    function transfer(address recipient,uint256 amount) public override returns (bool){
+        require(amount > 0,"Amount must be greater than zero.");
+        _transfer(_msgSender(),recipient,amount);
+        return true;
+    }
+
+    function redeem(uint256 amount) external {
+        require(amount > 0,"Amount must be greater than zero.");
+        _burn(_msgSender(),amount);
+    }
+
+    function checkBalance(address account) external view returns (uint256){
+        return balanceOf(account);
+    }
+     function approve(address spender, uint256 amount) public override returns (bool) {
+        _approve(msg.sender, spender, amount);
+        return true;
+    }
+
+        function stationerystoreitems() external view returns (string memory) {
+        console.log("The below items are available in the stationery store for purchase:");
+        console.log("Item 1-pen");
+        console.log("Item 2-pencil");
+        console.log("Item 3-notebook");
+        console.log("Item 4-ruler");
+        return "The below items are available in the stationery store for purchase:\nItems 1-candy,2-cake,3-doughnut";
+    }
+
+    function redeemTokens(uint8 _userSelection) external payable returns (bool) {
+        if (_userSelection == 1) {
+            require(this.balanceOf(msg.sender) >= 75,"You do not have enough Degan");
+            approve(msg.sender, 75);
+            transferFrom(msg.sender, owner(), 75);
+            console.log("you have successfully redeemed for pen");
+            return true;
+        }
+        else if (_userSelection == 2) {
+            require(this.balanceOf(msg.sender) >= 30,"You do not have enough Degan");
+            approve(msg.sender, 30);
+            transferFrom(msg.sender, owner(), 30);
+            console.log("you have successfully redeemed for pencil");
+            return true;
+        }
+        else if (_userSelection == 3) {
+            require(this.balanceOf(msg.sender) >= 25,"You do not have enough Degan");
+            approve(msg.sender, 25);
+            transferFrom(msg.sender, owner(), 25);
+            console.log("you have successfully redeemed for notebook");
+            return true;
+        }
+        else if (_userSelection == 4) {
+            require(this.balanceOf(msg.sender) >= 50,"You do not have enough Degan");
+            approve(msg.sender, 50);
+            transferFrom(msg.sender, owner(), 50);
+            console.log("you have successfully redeemed for compass");
+            return true;
+    }
+    else {
+        console.log("That is not a valid choice");
+        return false;
+    }
+    }
+}
